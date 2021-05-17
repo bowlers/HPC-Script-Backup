@@ -6,7 +6,6 @@ import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import accuracy_score
 
@@ -37,17 +36,18 @@ data = pd.read_csv(Path(FILE), sep='\t', encoding='ISO-8859-1')
 data = data.drop('PID', axis =1)
 data = data.drop('Study', axis =1)
 data = data.drop('Type', axis =1)
-Y = pd.DataFrame(data.iloc[:,data.columns.get_loc('OS')])
+y = data['OS']
 data = data.drop('OS', axis =1)
-X = pd.DataFrame(data.iloc[:,:])
-names = data.columns
+featuers = data.columns
 
 X = np.nan_to_num(X)
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25)
-regressor = RandomForestRegressor(n_estimators=20, random_state=0)
-regressor.fit(X_train, Y_train)
+rfc = RandomForestClassifier(n_estimators=1000, random_state=42, max_depth=None)
+rfc.fit(X_train, Y_train)
 Y_pred = regressor.predict(X_test)
 
 print("Features sorted by their score: ")
-print(sorted(zip(map(lambda x: round(x, 4), regressor.feature_importances_), names), reverse=True))
+print(sorted(zip(map(lambda x: round(x, 4), rfc.feature_importances_), names), reverse=True))
+
+
